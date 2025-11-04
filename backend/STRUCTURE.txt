@@ -1,0 +1,295 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    STRUCTURE DU BACKEND E-COMMERCE                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📂 backend/
+│
+├── 📄 DOCUMENTATION (30.8K total)
+│   ├── README.md               (7.2K)  - Guide complet d'utilisation
+│   ├── QUICKSTART.md           (2.9K)  - Démarrage rapide en 3 étapes
+│   ├── ARCHITECTURE.md         (13K)   - Architecture technique détaillée
+│   ├── SUMMARY.md              (7.7K)  - Résumé du projet
+│   └── STRUCTURE.txt                   - Ce fichier
+│
+├── 📄 CODE PRINCIPAL (60.6K total - 3225 lignes)
+│   ├── models.py               (24K)   - Modèles, repositories, services
+│   ├── schemas.py              (11K)   - Schémas Pydantic pour DTOs
+│   ├── main.py                 (7.1K)  - Application FastAPI principale
+│   ├── seed.py                 (13K)   - Script de données de test
+│   └── test_api.py             (5.5K)  - Tests automatisés
+│
+├── 📁 ROUTERS/ (39.3K total - 1258 lignes)
+│   ├── __init__.py             (53B)   - Initialisation package
+│   ├── auth.py                 (6.6K)  - Authentification (219 lignes)
+│   ├── catalog.py              (2.0K)  - Catalogue produits (75 lignes)
+│   ├── cart.py                 (4.4K)  - Panier (151 lignes)
+│   ├── orders.py               (6.2K)  - Commandes (208 lignes)
+│   ├── support.py              (5.8K)  - Support client (190 lignes)
+│   └── admin.py                (14K)   - Administration (413 lignes)
+│
+└── 📄 CONFIGURATION
+    ├── requirements.txt        (124B)  - Dépendances Python
+    └── .gitignore                      - Fichiers à ignorer Git
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           ENDPOINTS DISPONIBLES                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🔓 PUBLICS (pas d'authentification)
+  └── /api/catalog
+      ├── GET  /products              - Liste tous les produits
+      └── GET  /products/{id}         - Détail d'un produit
+
+🔐 AUTHENTIFICATION
+  └── /api/auth
+      ├── POST /register              - Inscription nouvel utilisateur
+      ├── POST /login                 - Connexion
+      ├── POST /logout-v2             - Déconnexion
+      ├── GET  /profile               - Récupérer profil
+      └── PUT  /profile               - Mettre à jour profil
+
+👤 UTILISATEUR AUTHENTIFIÉ
+  ├── /api/cart
+  │   ├── GET    /                    - Voir mon panier
+  │   ├── POST   /add                 - Ajouter au panier
+  │   ├── POST   /remove              - Retirer du panier
+  │   └── DELETE /clear               - Vider le panier
+  │
+  ├── /api/orders
+  │   ├── POST /checkout              - Créer commande depuis panier
+  │   ├── POST /pay                   - Payer une commande
+  │   ├── GET  /                      - Mes commandes
+  │   ├── GET  /{id}                  - Détail d'une commande
+  │   └── POST /cancel                - Annuler une commande
+  │
+  └── /api/support
+      ├── POST /threads               - Créer fil discussion
+      ├── GET  /threads               - Mes fils
+      ├── GET  /threads/{id}          - Détail fil
+      └── POST /threads/{id}/messages - Poster message
+
+🔒 ADMINISTRATEUR UNIQUEMENT
+  └── /api/admin
+      ├── COMMANDES
+      │   ├── GET  /orders            - Toutes les commandes
+      │   ├── POST /orders/validate   - Valider commande
+      │   ├── POST /orders/ship       - Expédier commande
+      │   ├── POST /orders/deliver    - Marquer livrée
+      │   └── POST /orders/refund     - Rembourser commande
+      │
+      ├── PRODUITS
+      │   ├── GET  /products          - Tous les produits
+      │   ├── POST /products          - Créer produit
+      │   ├── PUT  /products          - Mettre à jour produit
+      │   └── PUT  /products/stock    - Mettre à jour stock
+      │
+      ├── SUPPORT
+      │   ├── GET  /support/threads         - Tous les threads
+      │   ├── POST /support/threads/{id}/reply  - Répondre
+      │   └── POST /support/threads/{id}/close  - Fermer thread
+      │
+      └── STATISTIQUES
+          └── GET  /stats             - Stats globales
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          MODÈLES DE DONNÉES                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📊 MODÈLES PRINCIPAUX (models.py)
+  ├── User              - Utilisateur (client ou admin)
+  ├── Product           - Produit du catalogue
+  ├── Cart              - Panier d'achat
+  ├── CartItem          - Item dans le panier
+  ├── Order             - Commande
+  ├── OrderItem         - Item dans la commande
+  ├── Invoice           - Facture
+  ├── InvoiceLine       - Ligne de facture
+  ├── Payment           - Paiement
+  ├── Delivery          - Livraison
+  ├── MessageThread     - Fil de discussion support
+  └── Message           - Message dans un fil
+
+📋 REPOSITORIES (accès données)
+  ├── UserRepository     - Gestion utilisateurs
+  ├── ProductRepository  - Gestion produits
+  ├── CartRepository     - Gestion paniers
+  ├── OrderRepository    - Gestion commandes
+  ├── InvoiceRepository  - Gestion factures
+  ├── PaymentRepository  - Gestion paiements
+  └── ThreadRepository   - Gestion support
+
+⚙️ SERVICES (logique métier)
+  ├── AuthService        - Authentification
+  ├── CatalogService     - Catalogue
+  ├── CartService        - Panier
+  ├── OrderService       - Commandes
+  ├── BillingService     - Facturation
+  ├── DeliveryService    - Livraison
+  ├── CustomerService    - Support client
+  ├── PaymentGateway     - Passerelle paiement (mock)
+  ├── SessionManager     - Gestion sessions
+  └── PasswordHasher     - Hash mots de passe
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         SCHÉMAS PYDANTIC (DTOs)                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📥 REQUÊTES (Request)
+  ├── RegisterRequest           - Inscription
+  ├── LoginRequest              - Connexion
+  ├── UpdateProfileRequest      - Mise à jour profil
+  ├── AddToCartRequest          - Ajout panier
+  ├── RemoveFromCartRequest     - Retrait panier
+  ├── CheckoutRequest           - Création commande
+  ├── PaymentRequest            - Paiement
+  ├── CancelOrderRequest        - Annulation
+  ├── CreateThreadRequest       - Nouveau fil support
+  ├── PostMessageRequest        - Nouveau message
+  ├── ValidateOrderRequest      - Validation (admin)
+  ├── ShipOrderRequest          - Expédition (admin)
+  ├── MarkDeliveredRequest      - Livraison (admin)
+  ├── RefundOrderRequest        - Remboursement (admin)
+  ├── CreateProductRequest      - Création produit (admin)
+  ├── UpdateProductRequest      - MAJ produit (admin)
+  └── UpdateStockRequest        - MAJ stock (admin)
+
+📤 RÉPONSES (Response)
+  ├── LoginResponse             - Réponse connexion
+  ├── UserProfileResponse       - Profil utilisateur
+  ├── ProductResponse           - Produit
+  ├── ProductListResponse       - Liste produits
+  ├── CartItemResponse          - Item panier
+  ├── CartResponse              - Panier complet
+  ├── OrderItemResponse         - Item commande
+  ├── DeliveryResponse          - Livraison
+  ├── OrderResponse             - Commande
+  ├── OrderListResponse         - Liste commandes
+  ├── PaymentResponse           - Paiement
+  ├── MessageResponse           - Message
+  ├── ThreadResponse            - Fil discussion
+  ├── ThreadListResponse        - Liste fils
+  ├── AdminStatsResponse        - Statistiques
+  └── ErrorResponse             - Erreur standard
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                            CYCLE DE VIE COMMANDE                             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+  [CLIENT] Ajout produits au panier
+      │
+      ▼
+  [CLIENT] POST /api/orders/checkout
+      │
+      ├──> STATUT: CREE
+      │    - Panier vidé
+      │    - Stock réservé
+      │
+      ▼
+  [ADMIN] POST /api/admin/orders/validate (optionnel)
+      │
+      ├──> STATUT: VALIDEE
+      │
+      ▼
+  [CLIENT] POST /api/orders/pay
+      │
+      ├──> STATUT: PAYEE
+      │    - Paiement effectué
+      │    - Facture générée
+      │
+      ▼
+  [ADMIN] POST /api/admin/orders/ship
+      │
+      ├──> STATUT: EXPEDIEE
+      │    - Numéro de tracking généré
+      │
+      ▼
+  [ADMIN] POST /api/admin/orders/deliver
+      │
+      └──> STATUT: LIVREE ✓
+
+  [ALTERNATIVE 1] Client annule avant expédition
+      POST /api/orders/cancel
+      └──> STATUT: ANNULEE (stock restitué)
+
+  [ALTERNATIVE 2] Admin rembourse
+      POST /api/admin/orders/refund
+      └──> STATUT: REMBOURSEE (stock restitué)
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          COMPTES DE TEST                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╗
+
+👨‍💼 ADMINISTRATEUR
+  Email    : admin@ecom.test
+  Password : admin123
+  Accès    : Tous les endpoints /api/admin
+
+👤 CLIENTS
+  Email    : alice@email.test  |  bob@email.test  |  charlie@email.test
+  Password : password123       |  password123     |  password123
+  Statut   : 1 commande livrée | 1 commande payée | Panier actif
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                            DÉMARRAGE RAPIDE                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+1️⃣  INSTALLER
+    $ pip install -r requirements.txt
+
+2️⃣  SEED (données de test)
+    $ python seed.py
+
+3️⃣  DÉMARRER
+    $ python main.py
+
+4️⃣  TESTER
+    $ python test_api.py
+
+5️⃣  EXPLORER
+    🌐 API         : http://localhost:8000
+    📚 Swagger UI  : http://localhost:8000/docs
+    📖 ReDoc       : http://localhost:8000/redoc
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                            STATISTIQUES                                      ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📊 CODE
+  - Lignes totales    : 3225
+  - Fichiers Python   : 13
+  - Endpoints API     : 35+
+  - Taille totale     : ~100K
+
+📦 DONNÉES
+  - Modèles           : 12
+  - Repositories      : 6
+  - Services          : 8
+  - Schémas Pydantic  : 30+
+
+🔐 SÉCURITÉ
+  - Authentification  : ✓ Token-based
+  - Autorisation      : ✓ User/Admin
+  - Validation        : ✓ Pydantic
+  - CORS              : ✓ Configuré
+
+📚 DOCUMENTATION
+  - README            : ✓ Complet
+  - Quickstart        : ✓ Disponible
+  - Architecture      : ✓ Détaillée
+  - Swagger/ReDoc     : ✓ Automatique
+  - Commentaires      : ✓ En français
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    ✅ PROJET COMPLET ET FONCTIONNEL                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Ce backend FastAPI est prêt à être utilisé pour un site e-commerce complet !
+Documentation complète disponible dans README.md et ARCHITECTURE.md
