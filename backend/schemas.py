@@ -166,6 +166,7 @@ class OrderItemResponse(BaseModel):
     quantity: int
     line_total_cents: int
     line_total_euros: float
+    image_url: Optional[str] = None
 
 
 class DeliveryResponse(BaseModel):
@@ -197,20 +198,26 @@ class OrderResponse(BaseModel):
     payment_id: Optional[str] = None
 
     @staticmethod
-    def from_order(order):
+    def from_order(order, products_repo=None):
         """Convertit un modèle Order en OrderResponse."""
-        items = [
-            OrderItemResponse(
+        items = []
+        for item in order.items:
+            image_url = None
+            if products_repo:
+                product = products_repo.get(item.product_id)
+                if product:
+                    image_url = getattr(product, 'image_url', None)
+
+            items.append(OrderItemResponse(
                 product_id=item.product_id,
                 name=item.name,
                 unit_price_cents=item.unit_price_cents,
                 unit_price_euros=item.unit_price_cents / 100.0,
                 quantity=item.quantity,
                 line_total_cents=item.unit_price_cents * item.quantity,
-                line_total_euros=(item.unit_price_cents * item.quantity) / 100.0
-            )
-            for item in order.items
-        ]
+                line_total_euros=(item.unit_price_cents * item.quantity) / 100.0,
+                image_url=image_url
+            ))
 
         delivery = None
         if order.delivery:

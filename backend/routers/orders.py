@@ -37,7 +37,7 @@ async def checkout(
     """
     try:
         order = context.order_service.checkout(user_id)
-        return OrderResponse.from_order(order)
+        return OrderResponse.from_order(order, context.products_repo)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -119,7 +119,7 @@ async def get_my_orders(
         orders = context.order_service.view_orders(user_id)
 
         order_responses = [
-            OrderResponse.from_order(order)
+            OrderResponse.from_order(order, context.products_repo)
             for order in orders
         ]
 
@@ -165,7 +165,7 @@ async def get_order(
         if order.user_id != user_id and not is_admin:
             raise HTTPException(status_code=403, detail="Accès non autorisé à cette commande")
 
-        return OrderResponse.from_order(order)
+        return OrderResponse.from_order(order, context.products_repo)
     except HTTPException:
         raise
     except Exception as e:
@@ -205,7 +205,7 @@ async def cancel_order(
             order_id=request.order_id
         )
 
-        return OrderResponse.from_order(order)
+        return OrderResponse.from_order(order, context.products_repo)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

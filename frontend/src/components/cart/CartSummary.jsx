@@ -1,13 +1,8 @@
 import React from 'react';
-import Card from '../common/Card';
-import Button from '../common/Button';
+import { ArrowRight, Shield, TruckIcon, Sparkles } from 'lucide-react';
 
 /**
- * Composant CartSummary - Résumé du panier avec total
- * @param {Object} props - Les propriétés du composant
- * @param {Object} props.cart - Les données du panier
- * @param {Function} props.onCheckout - Fonction appelée pour passer commande
- * @param {boolean} props.loading - État de chargement
+ * CartSummary Moderne avec Glassmorphism
  */
 const CartSummary = ({ cart, onCheckout, loading = false }) => {
   const itemsCount = cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
@@ -16,43 +11,101 @@ const CartSummary = ({ cart, onCheckout, loading = false }) => {
   const total = subtotal + shipping;
 
   return (
-    <Card className="sticky top-20">
-      <h2 className="text-xl font-bold text-gray-800 mb-6">Résumé de la commande</h2>
+    <div className="sticky top-24 backdrop-blur-xl bg-white/70 border border-white/20 rounded-3xl p-8 shadow-glass">
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent mb-2">
+          Résumé de la commande
+        </h2>
+        <div className="h-1 w-16 bg-gradient-to-r from-primary-500 to-accent-500 rounded-full"></div>
+      </div>
 
-      <div className="space-y-3 mb-6">
-        <div className="flex justify-between text-gray-600">
-          <span>Sous-total ({itemsCount} article{itemsCount > 1 ? 's' : ''})</span>
-          <span className="font-semibold">{subtotal.toFixed(2)} €</span>
+      {/* Détails */}
+      <div className="space-y-4 mb-6">
+        {/* Sous-total */}
+        <div className="flex justify-between items-center text-gray-700">
+          <span className="text-sm font-medium">
+            Sous-total ({itemsCount} article{itemsCount > 1 ? 's' : ''})
+          </span>
+          <span className="font-bold text-lg">{subtotal.toFixed(2)} €</span>
         </div>
-        <div className="flex justify-between text-gray-600">
-          <span>Frais de livraison</span>
-          <span className="font-semibold">
+
+        {/* Livraison */}
+        <div className="flex justify-between items-center text-gray-700">
+          <div className="flex items-center gap-2">
+            <TruckIcon className="text-primary-600" size={16} />
+            <span className="text-sm font-medium">Livraison</span>
+          </div>
+          <span className="font-bold text-lg">
             {subtotal > 0 ? `${shipping.toFixed(2)} €` : 'Gratuit'}
           </span>
         </div>
-        <div className="border-t border-gray-300 pt-3">
-          <div className="flex justify-between text-lg font-bold text-gray-800">
-            <span>Total</span>
-            <span className="text-primary-600">{total.toFixed(2)} €</span>
-          </div>
+
+        {/* Séparateur */}
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-4"></div>
+
+        {/* Total */}
+        <div className="flex justify-between items-center">
+          <span className="text-lg font-bold text-gray-800">Total</span>
+          <span className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+            {total.toFixed(2)} €
+          </span>
         </div>
       </div>
 
-      <Button
-        variant="primary"
-        className="w-full"
+      {/* Bouton Commander */}
+      <button
         onClick={onCheckout}
         disabled={itemsCount === 0 || loading}
-        loading={loading}
+        className="group relative w-full px-8 py-4 rounded-2xl overflow-hidden transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none mb-6"
       >
-        {loading ? 'Traitement...' : 'Passer la commande'}
-      </Button>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 group-hover:from-primary-600 group-hover:to-accent-600 transition-all duration-300"></div>
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-accent-500 to-primary-500 blur-xl transition-opacity duration-300"></div>
+        <span className="relative flex items-center justify-center gap-3 text-white font-bold text-lg">
+          {loading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Traitement...
+            </>
+          ) : (
+            <>
+              Passer la commande
+              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </>
+          )}
+        </span>
+      </button>
 
-      <div className="mt-4 text-sm text-gray-500 text-center">
-        <p>Livraison gratuite à partir de 50€</p>
-        <p className="mt-1">Paiement sécurisé</p>
+      {/* Avantages */}
+      <div className="space-y-3">
+        {/* Livraison gratuite */}
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-gradient-to-r from-primary-50/50 to-accent-50/50 border border-primary-100/50">
+          <TruckIcon className="text-primary-600 flex-shrink-0 mt-0.5" size={18} />
+          <div>
+            <p className="text-sm font-semibold text-gray-800">Livraison express</p>
+            <p className="text-xs text-gray-600">Gratuite dès 50€ d'achat</p>
+          </div>
+        </div>
+
+        {/* Paiement sécurisé */}
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-gradient-to-r from-accent-50/50 to-primary-50/50 border border-accent-100/50">
+          <Shield className="text-accent-600 flex-shrink-0 mt-0.5" size={18} />
+          <div>
+            <p className="text-sm font-semibold text-gray-800">Paiement sécurisé</p>
+            <p className="text-xs text-gray-600">Transactions 100% protégées</p>
+          </div>
+        </div>
+
+        {/* Satisfaction */}
+        <div className="flex items-start gap-3 p-3 rounded-xl bg-gradient-to-r from-primary-50/50 to-accent-50/50 border border-primary-100/50">
+          <Sparkles className="text-primary-600 flex-shrink-0 mt-0.5" size={18} />
+          <div>
+            <p className="text-sm font-semibold text-gray-800">Satisfait ou remboursé</p>
+            <p className="text-xs text-gray-600">30 jours pour changer d'avis</p>
+          </div>
+        </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

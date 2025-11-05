@@ -45,7 +45,7 @@ async def validate_order(
             admin_user_id=admin_id,
             order_id=request.order_id
         )
-        return OrderResponse.from_order(order)
+        return OrderResponse.from_order(order, context.products_repo)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
     except ValueError as e:
@@ -71,7 +71,7 @@ async def ship_order(
             admin_user_id=admin_id,
             order_id=request.order_id
         )
-        return OrderResponse.from_order(order)
+        return OrderResponse.from_order(order, context.products_repo)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
     except ValueError as e:
@@ -96,7 +96,7 @@ async def mark_delivered(
             admin_user_id=admin_id,
             order_id=request.order_id
         )
-        return OrderResponse.from_order(order)
+        return OrderResponse.from_order(order, context.products_repo)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
     except ValueError as e:
@@ -122,7 +122,7 @@ async def refund_order(
             order_id=request.order_id,
             amount_cents=request.amount_cents
         )
-        return OrderResponse.from_order(order)
+        return OrderResponse.from_order(order, context.products_repo)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
     except ValueError as e:
@@ -146,7 +146,7 @@ async def get_all_orders(
         all_orders = list(context.orders_repo._by_id.values())
 
         order_responses = [
-            OrderResponse.from_order(order)
+            OrderResponse.from_order(order, context.products_repo)
             for order in all_orders
         ]
 
