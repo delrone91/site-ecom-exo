@@ -103,7 +103,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         <div className="flex items-center justify-between gap-4">
           {/* Prix */}
           <div>
-            <div className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+            <div className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
               {product.price_euros.toFixed(2)} €
             </div>
           </div>

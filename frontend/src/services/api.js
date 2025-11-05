@@ -134,12 +134,23 @@ export const addToCart = async (productId, quantity = 1) => {
 };
 
 /**
- * Retirer un produit du panier
+ * Retirer un produit du panier complètement
  * @param {number} productId - ID du produit
  * @returns {Promise<Object>} Panier mis à jour
  */
 export const removeFromCart = async (productId) => {
   const response = await api.delete(`/api/cart/remove/${productId}`);
+  return response.data;
+};
+
+/**
+ * Diminuer la quantité d'un produit dans le panier
+ * @param {number} productId - ID du produit
+ * @param {number} quantity - Quantité à retirer
+ * @returns {Promise<Object>} Panier mis à jour
+ */
+export const removeQuantityFromCart = async (productId, quantity) => {
+  const response = await api.post('/api/cart/remove', { product_id: productId, quantity });
   return response.data;
 };
 
@@ -171,7 +182,10 @@ export const checkout = async (shippingAddress) => {
  * @returns {Promise<Object>} Commande mise à jour
  */
 export const payOrder = async (orderId, paymentData) => {
-  const response = await api.post(`/api/orders/${orderId}/pay`, paymentData);
+  const response = await api.post('/api/orders/pay', {
+    order_id: orderId,
+    ...paymentData
+  });
   return response.data;
 };
 
@@ -268,7 +282,7 @@ export const getAllOrders = async () => {
  * @returns {Promise<Object>} Commande validée
  */
 export const validateOrder = async (orderId) => {
-  const response = await api.post(`/api/admin/orders/${orderId}/validate`);
+  const response = await api.post('/api/admin/orders/validate', { order_id: orderId });
   return response.data;
 };
 
@@ -279,7 +293,7 @@ export const validateOrder = async (orderId) => {
  * @returns {Promise<Object>} Commande mise à jour
  */
 export const shipOrder = async (orderId, trackingNumber) => {
-  const response = await api.post(`/api/admin/orders/${orderId}/ship`, { tracking_number: trackingNumber });
+  const response = await api.post('/api/admin/orders/ship', { order_id: orderId });
   return response.data;
 };
 
@@ -289,7 +303,7 @@ export const shipOrder = async (orderId, trackingNumber) => {
  * @returns {Promise<Object>} Commande mise à jour
  */
 export const markDelivered = async (orderId) => {
-  const response = await api.post(`/api/admin/orders/${orderId}/deliver`);
+  const response = await api.post('/api/admin/orders/deliver', { order_id: orderId });
   return response.data;
 };
 

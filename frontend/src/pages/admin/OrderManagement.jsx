@@ -30,7 +30,8 @@ const OrderManagement = () => {
   const loadOrders = async () => {
     try {
       const data = await getAllOrders();
-      setOrders(data);
+      // L'API retourne {orders: [...]}
+      setOrders(data || []);
     } catch (error) {
       console.error('Erreur lors du chargement des commandes:', error);
     } finally {
@@ -103,35 +104,47 @@ const OrderManagement = () => {
   };
 
   const statusConfig = {
-    pending: {
+    CREE: {
       label: 'En attente',
       color: 'bg-yellow-100 text-yellow-800',
       icon: Clock,
     },
-    validated: {
+    VALIDEE: {
       label: 'Validée',
       color: 'bg-blue-100 text-blue-800',
       icon: CheckCircle,
     },
-    shipped: {
+    PAYEE: {
+      label: 'Payée',
+      color: 'bg-indigo-100 text-indigo-800',
+      icon: CheckCircle,
+    },
+    EXPEDIEE: {
       label: 'Expédiée',
       color: 'bg-purple-100 text-purple-800',
       icon: Truck,
     },
-    delivered: {
+    LIVREE: {
       label: 'Livrée',
       color: 'bg-green-100 text-green-800',
       icon: Package,
     },
-    canceled: {
+    ANNULEE: {
       label: 'Annulée',
       color: 'bg-red-100 text-red-800',
+      icon: XCircle,
+    },
+    REMBOURSEE: {
+      label: 'Remboursée',
+      color: 'bg-gray-100 text-gray-800',
       icon: XCircle,
     },
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
+    // Les timestamps du backend sont en secondes, on les convertit en millisecondes
+    const timestamp = typeof dateString === 'number' ? dateString * 1000 : dateString;
+    return new Date(timestamp).toLocaleDateString('fr-FR', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -145,7 +158,7 @@ const OrderManagement = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">
           Gestion des commandes
@@ -165,11 +178,13 @@ const OrderManagement = () => {
               onChange={(e) => setFilter(e.target.value)}
             >
               <option value="all">Tous les statuts</option>
-              <option value="pending">En attente</option>
-              <option value="validated">Validées</option>
-              <option value="shipped">Expédiées</option>
-              <option value="delivered">Livrées</option>
-              <option value="canceled">Annulées</option>
+              <option value="CREE">En attente</option>
+              <option value="VALIDEE">Validées</option>
+              <option value="PAYEE">Payées</option>
+              <option value="EXPEDIEE">Expédiées</option>
+              <option value="LIVREE">Livrées</option>
+              <option value="ANNULEE">Annulées</option>
+              <option value="REMBOURSEE">Remboursées</option>
             </select>
           </div>
         </Card>
@@ -204,7 +219,7 @@ const OrderManagement = () => {
         ) : (
           <div className="space-y-4">
             {filteredOrders.map((order) => {
-              const status = statusConfig[order.status] || statusConfig.pending;
+              const status = statusConfig[order.status] || statusConfig.CREE;
               const StatusIcon = status.icon;
               const isLoading = actionLoading === order.id;
 
@@ -223,15 +238,15 @@ const OrderManagement = () => {
                         </div>
                       </div>
                       <div className="text-sm text-gray-600 space-y-1">
-                        <p>Client: {order.user?.email || 'N/A'}</p>
+                        <p>Client: {order.user?.email || order.user_id || 'N/A'}</p>
                         <p>Date: {formatDate(order.created_at)}</p>
                         <p>Articles: {order.items?.reduce((total, item) => total + item.quantity, 0) || 0}</p>
                         <p className="font-bold text-primary-600 text-lg">
-                          Total: {order.total_euros.toFixed(2)} €
+                          Total: {order.total_euros?.toFixed(2) || '0.00'} €
                         </p>
-                        {order.tracking_number && (
+                        {order.delivery?.tracking_number && (
                           <p className="font-mono text-xs">
-                            Suivi: {order.tracking_number}
+                            Suivi: {order.delivery.tracking_number}
                           </p>
                         )}
                       </div>
@@ -247,7 +262,7 @@ const OrderManagement = () => {
                         Détails
                       </Button>
 
-                      {order.status === 'pending' && order.paid_at && (
+                      {order.status === 'CREE' && order.paid_at && (
                         <Button
                           variant="success"
                           size="sm"
@@ -260,7 +275,7 @@ const OrderManagement = () => {
                         </Button>
                       )}
 
-                      {order.status === 'validated' && (
+                      {order.status === 'PAYEE' && (
                         <Button
                           variant="primary"
                           size="sm"
@@ -273,7 +288,7 @@ const OrderManagement = () => {
                         </Button>
                       )}
 
-                      {order.status === 'shipped' && (
+                      {order.status === 'EXPEDIEE' && (
                         <Button
                           variant="success"
                           size="sm"

@@ -9,38 +9,45 @@ import Card from '../common/Card';
  */
 const OrderDetails = ({ order }) => {
   const statusConfig = {
-    pending: {
+    CREE: {
       label: 'En attente de validation',
       color: 'bg-yellow-100 text-yellow-800 border-yellow-300',
       icon: Clock,
     },
-    validated: {
+    VALIDEE: {
       label: 'Validée - En préparation',
       color: 'bg-blue-100 text-blue-800 border-blue-300',
       icon: CheckCircle,
     },
-    shipped: {
+    PAYEE: {
+      label: 'Payée - En préparation',
+      color: 'bg-indigo-100 text-indigo-800 border-indigo-300',
+      icon: CheckCircle,
+    },
+    EXPEDIEE: {
       label: 'Expédiée - En cours de livraison',
       color: 'bg-purple-100 text-purple-800 border-purple-300',
       icon: Truck,
     },
-    delivered: {
+    LIVREE: {
       label: 'Livrée',
       color: 'bg-green-100 text-green-800 border-green-300',
       icon: Package,
     },
-    canceled: {
+    ANNULEE: {
       label: 'Annulée',
       color: 'bg-red-100 text-red-800 border-red-300',
       icon: XCircle,
     },
   };
 
-  const status = statusConfig[order.status] || statusConfig.pending;
+  const status = statusConfig[order.status] || statusConfig.CREE;
   const StatusIcon = status.icon;
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
+    // Les timestamps du backend sont en secondes, on les convertit en millisecondes
+    const timestamp = typeof dateString === 'number' ? dateString * 1000 : dateString;
+    return new Date(timestamp).toLocaleDateString('fr-FR', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',

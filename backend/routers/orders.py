@@ -25,6 +25,7 @@ router = APIRouter()
 
 @router.post("/checkout", response_model=OrderResponse, status_code=201)
 async def checkout(
+    request: CheckoutRequest,
     user_id: str = Depends(__import__('dependencies').get_current_user_id),
     context=Depends(__import__('dependencies').get_context)
 ):
@@ -36,7 +37,7 @@ async def checkout(
     La commande est créée avec le statut CREE.
     """
     try:
-        order = context.order_service.checkout(user_id)
+        order = context.order_service.checkout(user_id, request.shipping_address)
         return OrderResponse.from_order(order, context.products_repo)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

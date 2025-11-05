@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserPlus, User, Lock, MapPin, Phone, Mail, ArrowRight } from 'lucide-react';
+import { UserPlus, User, Lock, MapPin, Mail, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getErrorMessage } from '../utils/helpers';
 
@@ -14,9 +14,9 @@ const RegisterPage = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    full_name: '',
+    first_name: '',
+    last_name: '',
     address: '',
-    phone: '',
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -41,16 +41,16 @@ const RegisterPage = () => {
       newErrors.confirmPassword = 'Les mots de passe ne correspondent pas';
     }
 
-    if (!formData.full_name.trim()) {
-      newErrors.full_name = 'Nom complet requis';
+    if (!formData.first_name.trim()) {
+      newErrors.first_name = 'Prénom requis';
+    }
+
+    if (!formData.last_name.trim()) {
+      newErrors.last_name = 'Nom requis';
     }
 
     if (!formData.address.trim()) {
       newErrors.address = 'Adresse requise';
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Téléphone requis';
     }
 
     setErrors(newErrors);
@@ -130,26 +130,49 @@ const RegisterPage = () => {
                 )}
               </div>
 
-              {/* Nom complet */}
+              {/* Prénom */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Nom complet
+                  Prénom
                 </label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                   <input
                     type="text"
-                    placeholder="Jean Dupont"
-                    value={formData.full_name}
-                    onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                    placeholder="Jean"
+                    value={formData.first_name}
+                    onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                     className={`w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/50 border ${
-                      errors.full_name ? 'border-red-300' : 'border-white/20'
+                      errors.first_name ? 'border-red-300' : 'border-white/20'
                     } focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all text-gray-800 placeholder-gray-500`}
-                    autoComplete="name"
+                    autoComplete="given-name"
                   />
                 </div>
-                {errors.full_name && (
-                  <p className="mt-2 text-sm text-red-600 font-medium">{errors.full_name}</p>
+                {errors.first_name && (
+                  <p className="mt-2 text-sm text-red-600 font-medium">{errors.first_name}</p>
+                )}
+              </div>
+
+              {/* Nom */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Nom
+                </label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    type="text"
+                    placeholder="Dupont"
+                    value={formData.last_name}
+                    onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                    className={`w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/50 border ${
+                      errors.last_name ? 'border-red-300' : 'border-white/20'
+                    } focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all text-gray-800 placeholder-gray-500`}
+                    autoComplete="family-name"
+                  />
+                </div>
+                {errors.last_name && (
+                  <p className="mt-2 text-sm text-red-600 font-medium">{errors.last_name}</p>
                 )}
               </div>
 
@@ -220,29 +243,6 @@ const RegisterPage = () => {
               </div>
               {errors.address && (
                 <p className="mt-2 text-sm text-red-600 font-medium">{errors.address}</p>
-              )}
-            </div>
-
-            {/* Téléphone */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Téléphone
-              </label>
-              <div className="relative">
-                <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type="tel"
-                  placeholder="+33 1 23 45 67 89"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className={`w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/50 border ${
-                    errors.phone ? 'border-red-300' : 'border-white/20'
-                  } focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all text-gray-800 placeholder-gray-500`}
-                  autoComplete="tel"
-                />
-              </div>
-              {errors.phone && (
-                <p className="mt-2 text-sm text-red-600 font-medium">{errors.phone}</p>
               )}
             </div>
 

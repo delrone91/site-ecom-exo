@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { getCart, addToCart as apiAddToCart, removeFromCart as apiRemoveFromCart, clearCart as apiClearCart } from '../services/api';
+import { getCart, addToCart as apiAddToCart, removeFromCart as apiRemoveFromCart, removeQuantityFromCart as apiRemoveQuantityFromCart, clearCart as apiClearCart } from '../services/api';
 import { useAuth } from './AuthContext';
 
 /**
@@ -119,8 +119,22 @@ export const CartProvider = ({ children }) => {
     if (!currentItem) return;
 
     const difference = newQuantity - currentItem.quantity;
-    if (difference !== 0) {
+    if (difference > 0) {
+      // Augmenter la quantité
       return addToCart(productId, difference);
+    } else if (difference < 0) {
+      // Diminuer la quantité
+      try {
+        setLoading(true);
+        const updatedCart = await apiRemoveQuantityFromCart(productId, Math.abs(difference));
+        setCart(updatedCart);
+        return updatedCart;
+      } catch (error) {
+        console.error('Erreur lors de la diminution de quantité:', error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

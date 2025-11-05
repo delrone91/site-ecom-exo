@@ -73,10 +73,10 @@ const OrderDetailPage = () => {
     );
   }
 
-  const canCancel = order.status === 'pending' && !order.paid_at;
+  const canCancel = order.status === 'CREE' && !order.paid_at;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Message de succès du paiement */}
         {paymentSuccess && (

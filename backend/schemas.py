@@ -145,7 +145,7 @@ class CartResponse(BaseModel):
 
 class CheckoutRequest(BaseModel):
     """Requête de création de commande (checkout)."""
-    pass  # Le panier est déjà stocké côté serveur
+    shipping_address: Optional[str] = None
 
 
 class PaymentRequest(BaseModel):
@@ -187,6 +187,7 @@ class OrderResponse(BaseModel):
     total_cents: int
     total_euros: float
     created_at: float
+    shipping_address: Optional[str] = None
     validated_at: Optional[float] = None
     paid_at: Optional[float] = None
     shipped_at: Optional[float] = None
@@ -237,6 +238,7 @@ class OrderResponse(BaseModel):
             total_cents=order.total_cents(),
             total_euros=order.total_cents() / 100.0,
             created_at=order.created_at,
+            shipping_address=order.shipping_address,
             validated_at=order.validated_at,
             paid_at=order.paid_at,
             shipped_at=order.shipped_at,

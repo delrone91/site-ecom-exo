@@ -98,9 +98,9 @@ const PaymentPage = () => {
       // Envoyer le paiement (avec une fausse carte)
       const paymentData = {
         card_number: '4242424242424242', // Numéro de carte factice
-        card_holder: cardData.cardHolder,
-        expiry_date: `${cardData.expiryMonth}/${cardData.expiryYear}`,
-        cvv: cardData.cvv,
+        exp_month: parseInt(cardData.expiryMonth),
+        exp_year: parseInt(cardData.expiryYear),
+        cvc: cardData.cvv,
       };
 
       await payOrder(orderId, paymentData);
@@ -155,7 +155,7 @@ const PaymentPage = () => {
   const cardType = detectCardType();
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Avertissement TRÈS VISIBLE */}
         <div className="mb-8 bg-yellow-50 border-2 border-yellow-400 rounded-lg p-6">

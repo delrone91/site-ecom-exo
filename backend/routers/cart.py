@@ -131,6 +131,38 @@ async def remove_from_cart(
 
 
 # =========================
+# ===== SUPPRIMER UN PRODUIT (DELETE) =====
+# =========================
+
+@router.delete("/remove/{product_id}", response_model=CartResponse)
+async def remove_product_by_id(
+    product_id: str,
+    user_id: str = Depends(__import__('dependencies').get_current_user_id),
+    context=Depends(__import__('dependencies').get_context)
+):
+    """
+    Retire complètement un produit du panier (via DELETE).
+
+    Args:
+        product_id: ID du produit à retirer complètement
+
+    Returns:
+        Le panier mis à jour
+    """
+    try:
+        context.cart_service.remove_from_cart(
+            user_id=user_id,
+            product_id=product_id,
+            qty=0  # 0 = retrait complet
+        )
+
+        # Retourne le panier mis à jour
+        return await get_cart(user_id, context)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =========================
 # ===== VIDER LE PANIER =====
 # =========================
 

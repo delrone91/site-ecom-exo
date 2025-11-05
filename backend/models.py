@@ -171,6 +171,7 @@ class Order:
     items: List[OrderItem]
     status: OrderStatus
     created_at: float
+    shipping_address: Optional[str] = None
     validated_at: Optional[float] = None
     paid_at: Optional[float] = None
     shipped_at: Optional[float] = None
@@ -481,7 +482,7 @@ class OrderService:
 
     # ----- FONCTIONS CLIENT -----
 
-    def checkout(self, user_id: str) -> Order:
+    def checkout(self, user_id: str, shipping_address: str = None) -> Order:
         cart = self.carts.get_or_create(user_id)
         if not cart.items:
             raise ValueError("Panier vide.")
@@ -505,7 +506,8 @@ class OrderService:
             user_id=user_id,
             items=order_items,
             status=OrderStatus.CREE,
-            created_at=time.time()
+            created_at=time.time(),
+            shipping_address=shipping_address
         )
         self.orders.add(order)
         # vider le panier
