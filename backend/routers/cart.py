@@ -50,7 +50,8 @@ async def get_cart(
                     unit_price_euros=product.price_cents / 100.0,
                     quantity=cart_item.quantity,
                     line_total_cents=product.price_cents * cart_item.quantity,
-                    line_total_euros=(product.price_cents * cart_item.quantity) / 100.0
+                    line_total_euros=(product.price_cents * cart_item.quantity) / 100.0,
+                    image_url=getattr(product, 'image_url', None)
                 ))
 
         return CartResponse(

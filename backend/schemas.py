@@ -129,6 +129,7 @@ class CartItemResponse(BaseModel):
     quantity: int
     line_total_cents: int
     line_total_euros: float
+    image_url: Optional[str] = None
 
 
 class CartResponse(BaseModel):

@@ -25,9 +25,12 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
       {/* Image du produit */}
       <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
         <img
-          src={'https://via.placeholder.com/100'}
+          src={item.image_url || 'https://via.placeholder.com/100'}
           alt={item.product_name || 'Produit'}
           className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.src = 'https://via.placeholder.com/100';
+          }}
         />
       </div>
 
