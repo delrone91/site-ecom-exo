@@ -214,7 +214,7 @@ export const getOrder = async (orderId) => {
  * @returns {Promise<Object>} Commande annulée
  */
 export const cancelOrder = async (orderId) => {
-  const response = await api.post(`/api/orders/${orderId}/cancel`);
+  const response = await api.post('/api/orders/cancel', { order_id: orderId });
   return response.data;
 };
 
